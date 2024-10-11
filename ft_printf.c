@@ -6,7 +6,7 @@
 /*   By: arjaber- <arjaber-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/11 16:11:06 by arjaber-          #+#    #+#             */
-/*   Updated: 2024/10/11 17:49:29 by arjaber-         ###   ########.fr       */
+/*   Updated: 2024/10/11 18:05:05 by arjaber-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,9 @@ int	is_arg(const char *format, int *counter)
 {
 	int	 i;
 	char *s;
+	int	og_counter;
 
+	og_counter = *counter;
 	i = 0;
 	s = "cspdiuxX";
 	while (format[*counter] && format[*counter] == ' ')
@@ -40,6 +42,7 @@ int	is_arg(const char *format, int *counter)
 		}
 		i++;
 	}
+	*counter = og_counter;
 	return (0);
 }
 
@@ -56,13 +59,18 @@ int ft_printf(char const *format, ...)
 	{
 		if (format[counter] != '%')
 			write(1, &format[counter], 1);
-		else if (format[counter] == '%')
+		else
 		{
 			counter++;
 			if (is_arg(format, &counter))
 				ft_print_arg(format[counter], &counter);
 			else if (format[counter] == '%')
 				write(1, "%", 1);
+			else
+			{
+				write(1, "%", 1);
+				write(1, &format[counter], 1);
+			}
 		}
 		counter++;
 	}
@@ -72,8 +80,20 @@ int ft_printf(char const *format, ...)
 
 int	main(void)
 {
-	ft_printf("Hola cómo estás, %s? Tienes un 20%%%     de posibilidades de ser majo :)");
+	ft_printf("Hola %J");
 	printf("\n");
-	printf("Hola cómo estás, %s? Tienes un 20%%%     de posibilidades de ser majo :)", "[argumento]", 6);
+	printf("Hola %J");
+	printf("\n");
+
+	// Multiple ' '
+	ft_printf("Hola    J");
+	printf("\n");
+	printf("Hola    J");
+	printf("\n");
+
+	// Multiple %%%, and multiple ' ' between % and argument type declarator
+	ft_printf("Hola cómo estás, %s? Tienes un 20%%%     ie posibilidades de ser majo :)");
+	printf("\n");
+	printf("Hola cómo estás, %s? Tienes un 20%%%     ie posibilidades de ser majo :)", "[argumento]", 6);
 	return (0);
 }
