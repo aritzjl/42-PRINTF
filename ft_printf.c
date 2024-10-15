@@ -6,13 +6,14 @@
 /*   By: aritz <aritz@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/11 16:11:06 by arjaber-          #+#    #+#             */
-/*   Updated: 2024/10/15 12:53:51 by aritz            ###   ########.fr       */
+/*   Updated: 2024/10/15 13:05:10 by aritz            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <stdarg.h>
 #include <unistd.h>
 #include <stdio.h>
+#include <limits.h>
 
 int	ft_putchar(char c)
 {
@@ -93,25 +94,35 @@ int ft_putunsigned(unsigned int n)
 	return count;
 }
 
+int	ft_put_hex_lower_64(unsigned long long n)
+{
+    char	*hex_digits = "0123456789abcdef";
+	int		digit;
+	int		count = 0;
+
+    if (n >= 16)
+        count += ft_put_hex_lower_64(n / 16);
+    digit = hex_digits[n % 16];  
+    count += write(1, &digit, 1);
+	return count;
+}
+
 int	ft_put_ptr(void *ptr)
 {
-    unsigned long address;
-    char *hex_digits = "0123456789abcdef";
+    unsigned long long address;
 	int count = 0;
 
-    address = (unsigned long)ptr;
+    address = (unsigned long long)ptr;
 	if (address == 0)
 	{
 		count += ft_putstr("(nil)");
 		return count;
 	}
     count += ft_putstr("0x");
-    if (address == 0)
-        count += ft_putchar('0');
-    else
-        count += ft_put_hex_lower(address);
+    count += ft_put_hex_lower_64(address);
 	return count;
 }
+
 
 int	ft_print_arg(char c, va_list args)
 {
@@ -155,8 +166,75 @@ int	ft_printf(char const *str, ...)
 	va_end(args);
 	return (total_len);
 }
+/*
+int	main(void)
+{
+int my_len, orig_len;
 
+// Test with a simple string
+my_len = ft_printf("Simple test\n");
+orig_len = printf("Simple test\n");
+printf("ft_printf: %d characters, printf: %d characters\n\n", my_len, orig_len);
 
+// Test with integers (including limits)
+my_len = ft_printf("Positive integer: %d, Negative integer: %d\n", 123, -456);
+orig_len = printf("Positive integer: %d, Negative integer: %d\n", 123, -456);
+printf("ft_printf: %d characters, printf: %d characters\n\n", my_len, orig_len);
+
+my_len = ft_printf("Maximum integer: %d, Minimum integer: %d\n", INT_MAX, INT_MIN);
+orig_len = printf("Maximum integer: %d, Minimum integer: %d\n", INT_MAX, INT_MIN);
+printf("ft_printf: %d characters, printf: %d characters\n\n", my_len, orig_len);
+
+// Test with characters
+my_len = ft_printf("Character: %c\n", 'A');
+orig_len = printf("Character: %c\n", 'A');
+printf("ft_printf: %d characters, printf: %d characters\n\n", my_len, orig_len);
+
+// Test with strings
+my_len = ft_printf("String: %s\n", "Hello, world!");
+orig_len = printf("String: %s\n", "Hello, world!");
+printf("ft_printf: %d characters, printf: %d characters\n\n", my_len, orig_len);
+
+my_len = ft_printf("NULL string: %s\n", NULL);
+orig_len = printf("NULL string: %s\n", NULL);
+printf("ft_printf: %d characters, printf: %d characters\n\n", my_len, orig_len);
+
+// Test with pointers
+int x = 42;
+my_len = ft_printf("Pointer: %p\n", &x);
+orig_len = printf("Pointer: %p\n", &x);
+printf("ft_printf: %d characters, printf: %d characters\n\n", my_len, orig_len);
+
+// Test with hexadecimal numbers (lowercase)
+my_len = ft_printf("Hexadecimal (lowercase): %x\n", 255);
+orig_len = printf("Hexadecimal (lowercase): %x\n", 255);
+printf("ft_printf: %d characters, printf: %d characters\n\n", my_len, orig_len);
+
+// Test with hexadecimal numbers (uppercase)
+my_len = ft_printf("Hexadecimal (uppercase): %X\n", 255);
+orig_len = printf("Hexadecimal (uppercase): %X\n", 255);
+printf("ft_printf: %d characters, printf: %d characters\n\n", my_len, orig_len);
+
+// Test with unsigned integers
+my_len = ft_printf("Unsigned: %u\n", 4294967295u);
+orig_len = printf("Unsigned: %u\n", 4294967295u);
+printf("ft_printf: %d characters, printf: %d characters\n\n", my_len, orig_len);
+
+// Test with percentage
+my_len = ft_printf("Percentage: %%\n");
+orig_len = printf("Percentage: %%\n");
+printf("ft_printf: %d characters, printf: %d characters\n\n", my_len, orig_len);
+
+// Edge cases and combinations
+my_len = ft_printf("Combination: %d, %x, %s, %p\n", 1024, 255, "Test", &x);
+orig_len = printf("Combination: %d, %x, %s, %p\n", 1024, 255, "Test", &x);
+printf("ft_printf: %d characters, printf: %d characters\n\n", my_len, orig_len);
+
+return 0;
+}
+*/
+
+/*
 int main(void)
 {
     int n = 42;
@@ -233,3 +311,4 @@ int main(void)
     printf("\n\n");
     return 0;
 }
+*/
