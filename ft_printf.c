@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_printf.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: arjaber- <arjaber-@student.42.fr>          +#+  +:+       +#+        */
+/*   By: aritz <aritz@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/11 16:11:06 by arjaber-          #+#    #+#             */
-/*   Updated: 2024/10/11 18:05:05 by arjaber-         ###   ########.fr       */
+/*   Updated: 2024/10/15 11:56:18 by aritz            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,65 +14,66 @@
 #include <unistd.h>
 #include <stdio.h>
 
-void	ft_print_arg(char c, int *counter)
+void	ft_putchar(char c)
 {
-	write(1, &"[argumento]", 11);
-	*counter = *counter + 1;
+	write(1, &c, 1);
 }
 
-int	is_arg(const char *format, int *counter)
+void	ft_putnbr(int n)
 {
-	int	 i;
-	char *s;
-	int	og_counter;
-
-	og_counter = *counter;
-	i = 0;
-	s = "cspdiuxX";
-	while (format[*counter] && format[*counter] == ' ')
-		(*counter)++;
-	while (s[i])
+	if (n == -2147483648)
 	{
-		if (s[i] == format[*counter])
-		{
-			if (format[*counter - 1] && format[*counter - 1] == ' ')
-				write(1, " ", 1);
-			*counter = *counter - 1;
-			return (1);	
-		}
-		i++;
+		ft_putchar('-');
+		ft_putchar('2');
+		ft_putnbr(147483648);
+		return ;
 	}
-	*counter = og_counter;
-	return (0);
+	if (n < 0)
+	{
+		ft_putchar('-');
+		n = -n;
+	}
+	if (n >= 10)
+		ft_putnbr(n / 10);
+	ft_putchar(n % 10 + '0');
 }
 
-int ft_printf(char const *format, ...)
+void	ft_putstr(char *str)
+{
+	if (!str)
+		return ;
+	while (*str)
+	{
+		ft_putchar(*str);
+		str++;
+	}	
+}
+
+void	ft_print_arg(char c, va_list args)
+{
+	if (c == '%')
+		ft_putchar('%');
+	else if (c == 'i')
+		ft_putnbr(va_arg(args, int));
+	else if (c == 's')
+		ft_putstr(va_arg(args, char *));
+	else
+		write(1, "[argumento]", 11);
+}
+
+int	ft_printf(char const *str, ...)
 {
 	va_list	args;
-	int	counter;
+	int		counter;
 
-	va_start(args, format);
-	counter = 0;
-	if (!format)
-		return (1);
-	while (format[counter])
+	va_start(args, str);
+	counter = -1;
+	while (str[++counter])
 	{
-		if (format[counter] != '%')
-			write(1, &format[counter], 1);
+		if (str[counter] == '%')
+			ft_print_arg(str[++counter], args);
 		else
-		{
-			counter++;
-			if (is_arg(format, &counter))
-				ft_print_arg(format[counter], &counter);
-			else if (format[counter] == '%')
-				write(1, "%", 1);
-			else
-			{
-				write(1, "%", 1);
-				write(1, &format[counter], 1);
-			}
-		}
-		counter++;
+			ft_putchar(str[counter]);
 	}
 	va_end(args);
 	return (1);
@@ -80,20 +81,37 @@ int ft_printf(char const *format, ...)
 
 int	main(void)
 {
-	ft_printf("Hola %J");
+	// Tests para tipo int
+	ft_printf("ft_printf (int):\n");
+	ft_printf("Hola %i\n", 42);
+	ft_printf("El número es %i\n", -2147483648);
+	ft_printf("Un número positivo %i\n", 123456);
+	ft_printf("Otro número negativo %i\n", -123);
+	
 	printf("\n");
-	printf("Hola %J");
+	
+	printf("printf (int):\n");
+	printf("Hola %i\n", 42);
+	printf("El número es %i\n", -2147483648);
+	printf("Un número positivo %i\n", 123456);
+	printf("Otro número negativo %i\n", -123);
+	
+	printf("\n");
+	
+	// Tests para tipo string
+	ft_printf("ft_printf (string):\n");
+	ft_printf("Hola %s\n", "mundo");
+	ft_printf("Una cadena %s\n", "de prueba");
+	ft_printf("Cadena vacía %s\n", "");
+	ft_printf("Cadena NULL %s\n", NULL);
+	
 	printf("\n");
 
-	// Multiple ' '
-	ft_printf("Hola    J");
-	printf("\n");
-	printf("Hola    J");
-	printf("\n");
-
-	// Multiple %%%, and multiple ' ' between % and argument type declarator
-	ft_printf("Hola cómo estás, %s? Tienes un 20%%%     ie posibilidades de ser majo :)");
-	printf("\n");
-	printf("Hola cómo estás, %s? Tienes un 20%%%     ie posibilidades de ser majo :)", "[argumento]", 6);
+	printf("printf (string):\n");
+	printf("Hola %s\n", "mundo");
+	printf("Una cadena %s\n", "de prueba");
+	printf("Cadena vacía %s\n", "");
+	printf("Cadena NULL %s\n", NULL);
+	
 	return (0);
 }
