@@ -6,7 +6,7 @@
 /*   By: aritz <aritz@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/11 16:11:06 by arjaber-          #+#    #+#             */
-/*   Updated: 2024/10/15 12:51:17 by aritz            ###   ########.fr       */
+/*   Updated: 2024/10/15 12:53:51 by aritz            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,144 +14,148 @@
 #include <unistd.h>
 #include <stdio.h>
 
-void	ft_putstr(char *str);
-
-void	ft_putchar(char c)
+int	ft_putchar(char c)
 {
-	write(1, &c, 1);
+	return (write(1, &c, 1));
 }
 
-void	ft_putnbr(int n)
+int	ft_putnbr(int n)
 {
+	int count = 0;
 	if (n == -2147483648)
 	{
-		ft_putchar('-');
-		ft_putchar('2');
-		ft_putnbr(147483648);
-		return ;
+		count += ft_putchar('-');
+		count += ft_putchar('2');
+		count += ft_putnbr(147483648);
+		return count;
 	}
 	if (n < 0)
 	{
-		ft_putchar('-');
+		count += ft_putchar('-');
 		n = -n;
 	}
 	if (n >= 10)
-		ft_putnbr(n / 10);
-	ft_putchar(n % 10 + '0');
+		count += ft_putnbr(n / 10);
+	count += ft_putchar(n % 10 + '0');
+	return count;
 }
 
-void	ft_put_hex_lower(unsigned int n)
+int	ft_put_hex_lower(unsigned int n)
 {
-    char	*hex_digits;
+    char	*hex_digits = "0123456789abcdef";
 	int		digit;
+	int		count = 0;
 
-	hex_digits = "0123456789abcdef";
     if (n >= 16)
-        ft_put_hex_lower(n / 16);
+        count += ft_put_hex_lower(n / 16);
     digit = hex_digits[n % 16];  
-    write(1, &digit, 1);
+    count += write(1, &digit, 1);
+	return count;
 }
 
-void	ft_put_hex_upper(unsigned int n)
+int	ft_put_hex_upper(unsigned int n)
 {
-    char	*hex_digits;
-	int digit;
+    char	*hex_digits = "0123456789ABCDEF";
+	int		digit;
+	int		count = 0;
 
-	hex_digits = "0123456789ABCDEF";
     if (n >= 16)
-        ft_put_hex_upper(n / 16);
+        count += ft_put_hex_upper(n / 16);
     digit = hex_digits[n % 16];  
-    write(1, &digit, 1);
+    count += write(1, &digit, 1);
+	return count;
 }
 
-void	ft_putstr(char *str)
+int	ft_putstr(char *str)
 {
+	int count = 0;
+
 	if (!str)
 	{
-		ft_putstr("(null)");
-		return ;
+		count += ft_putstr("(null)");
+		return count;
 	}
 	while (*str)
 	{
-		ft_putchar(*str);
+		count += ft_putchar(*str);
 		str++;
-	}	
+	}
+	return count;
 }
 
-void ft_putunsigned(unsigned int n)
+int ft_putunsigned(unsigned int n)
 {
+	int count = 0;
+
     if (n >= 10)
-        ft_putunsigned(n / 10);
-    ft_putchar(n % 10 + '0');
+        count += ft_putunsigned(n / 10);
+    count += ft_putchar(n % 10 + '0');
+	return count;
 }
 
-void	ft_put_ptr(void *ptr)
+int	ft_put_ptr(void *ptr)
 {
     unsigned long address;
     char *hex_digits = "0123456789abcdef";
+	int count = 0;
 
-    // Convierte el puntero a un número entero sin signo
     address = (unsigned long)ptr;
 	if (address == 0)
 	{
-		ft_putstr("(nil)");
-		return ;
+		count += ft_putstr("(nil)");
+		return count;
 	}
-
-    // Imprime el prefijo "0x"
-    ft_putstr("0x");
-
-    // Imprime la dirección en formato hexadecimal
+    count += ft_putstr("0x");
     if (address == 0)
-    {
-        ft_putchar('0');  // Si el puntero es NULL, imprime "0"
-    }
+        count += ft_putchar('0');
     else
-    {
-        // Llamada recursiva para imprimir la dirección en hexadecimal
-        ft_put_hex_lower(address);
-    }
+        count += ft_put_hex_lower(address);
+	return count;
 }
 
-void	ft_print_arg(char c, va_list args)
+int	ft_print_arg(char c, va_list args)
 {
+	int count = 0;
+
 	if (c == '%')
-		ft_putchar('%');
+		count += ft_putchar('%');
 	else if (c == 'i' || c == 'd')
-		ft_putnbr(va_arg(args, int));
+		count += ft_putnbr(va_arg(args, int));
 	else if (c == 's')
-		ft_putstr(va_arg(args, char *));
+		count += ft_putstr(va_arg(args, char *));
 	else if (c == 'c')
-		ft_putchar(va_arg(args, int));
+		count += ft_putchar(va_arg(args, int));
 	else if (c == 'u')
-		ft_putunsigned(va_arg(args, unsigned int));
+		count += ft_putunsigned(va_arg(args, unsigned int));
 	else if (c == 'x')
-		ft_put_hex_lower(va_arg(args, unsigned int));
+		count += ft_put_hex_lower(va_arg(args, unsigned int));
 	else if (c == 'X')
-		ft_put_hex_upper(va_arg(args, unsigned int));
+		count += ft_put_hex_upper(va_arg(args, unsigned int));
 	else if (c == 'p')
-		ft_put_ptr(va_arg(args, void *));
+		count += ft_put_ptr(va_arg(args, void *));
 	else
-		write(1, "[argumento]", 11);
+		count += write(1, "[argumento]", 11);
+	return count;
 }
 
 int	ft_printf(char const *str, ...)
 {
 	va_list	args;
-	int		counter;
+	int		total_len = 0;
+	int		counter = -1;
 
 	va_start(args, str);
-	counter = -1;
 	while (str[++counter])
 	{
 		if (str[counter] == '%')
-			ft_print_arg(str[++counter], args);
+			total_len += ft_print_arg(str[++counter], args);
 		else
-			ft_putchar(str[counter]);
+			total_len += ft_putchar(str[counter]);
 	}
 	va_end(args);
-	return (counter);
+	return (total_len);
 }
+
 
 int main(void)
 {
