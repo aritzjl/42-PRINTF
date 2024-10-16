@@ -6,7 +6,7 @@
 /*   By: aritz <aritz@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/11 16:11:06 by arjaber-          #+#    #+#             */
-/*   Updated: 2024/10/16 09:03:43 by aritz            ###   ########.fr       */
+/*   Updated: 2024/10/16 09:09:45 by aritz            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,8 +33,6 @@ int	ft_print_arg(char c, va_list args)
 		count += ft_put_hex_upper(va_arg(args, unsigned int));
 	else if (c == 'p')
 		count += ft_put_ptr(va_arg(args, void *));
-	else
-		count += write(1, "[argumento]", 11);
 	return (count);
 }
 
