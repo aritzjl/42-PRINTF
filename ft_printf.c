@@ -6,11 +6,11 @@
 /*   By: aritz <aritz@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/11 16:11:06 by arjaber-          #+#    #+#             */
-/*   Updated: 2024/10/15 13:21:27 by aritz            ###   ########.fr       */
+/*   Updated: 2024/10/16 09:01:31 by aritz            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "libprintf.h"
+#include "ft_printf.h"
 
 int	ft_print_arg(char c, va_list args)
 {
